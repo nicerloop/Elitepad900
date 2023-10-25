@@ -1,0 +1,23 @@
+Found HP SoftPack 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 as C:\Users\vagrant\Downloads\sp71504.exe
+Found HP SoftPack 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 as C:\Users\vagrant\Downloads\sp65877.exe
+Found HP SoftPack 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 as C:\Users\vagrant\Downloads\sp65376.exe
+Found HP SoftPack 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 as C:\Users\vagrant\Downloads\sp64673.exe
+Found HP SoftPack 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 as C:\Users\vagrant\Downloads\sp64682.exe
+Unpack HP SoftPack 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 to C:\Users\vagrant\ELITEPAD900\drivers\sp71504
+Unpack HP SoftPack 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65877
+Unpack HP SoftPack 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65376
+Unpack HP SoftPack 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64673
+Unpack HP SoftPack 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64682
+Found Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012 as C:\Users\vagrant\Downloads\GPS_BCM4751_W8_A02-P0P15_ZPE.exe
+Unpack Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012 to C:\Users\vagrant\ELITEPAD900\drivers\GPS_BCM4751_W8_A02-P0P15_ZPE
+Found Windows 10 Pro 22H2 en_US x86 ISO as C:\Users\vagrant\Downloads\Win10_22H2_EnglishInternational_x32v1.iso
+Mount Windows 10 Pro 22H2 en_US x86 ISO
+Mounted Windows 10 Pro 22H2 en_US x86 ISO as D:
+Copy *.* from D: to C:\Users\vagrant\ELITEPAD900
+Unmount Windows 10 Pro 22H2 en_US x86 ISO
+Keep only Windows 10 Pro variant
+Add drivers to WinPE image
+Add drivers to Setup image
+Add drivers to Install image
+Enable SMB1 Client
+Copy *.* from C:\Users\vagrant\ELITEPAD900 to C:\vagrant\ELITEPAD900
