@@ -1,9 +1,14 @@
 #Requires -Version 5.1
 $ErrorActionPreference = "Stop"
+
+# StrictMode makes Fido fail
 # Set-StrictMode -Version 3
+
 # Set-PSDebug -Trace 2
+
+# Prevent issues with CLI non-interactive execution
+# https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
 $ProgressPreference = "SilentlyContinue"
-# $GlobalProgressPreference = $global:ProgressPreference
 $global:ProgressPreference = "SilentlyContinue"
 
 function Copy-Files {
@@ -86,42 +91,23 @@ function Expand-HpSoftPack {
     Start-Process -FilePath $FilePath -ArgumentList "/s /e /f `"$Folder`"" -Wait
 }
 
-function Expand-Archive-Silent {
+function Expand-DellZipPack {
     param (
-        [Parameter(Mandatory)] $Path,
-        [Parameter(Mandatory)] $DestinationPath
+        $ZipPackFileBaseName,
+        $ZipPackDescription,
+        $DownloadsFolder,
+        $DriversFolder
     )
-    # Prevent issues with CLI non-interactive execution
-    # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
-    # $GlobalProgressPreference = $global:ProgressPreference
-    # $global:ProgressPreference = "SilentlyContinue"
-    Expand-Archive -Path $Path -DestinationPath $DestinationPath
-    # $global:ProgressPreference = $GlobalProgressPreference
+    $ZipPackFolder = (Join-Path -Path $DriversFolder -ChildPath $ZipPackFileBaseName)
+    Write-Host "Unpack $ZipPackDescription to $ZipPackFolder"
+    $ZipPackFile = (Join-Path -Path $DownloadsFolder -ChildPath "$ZipPackFileBaseName.exe")
+    $ZipPackArchive = (Join-Path -Path $DownloadsFolder -ChildPath "$ZipPackFileBaseName.zip")
+    Copy-Item -Path $ZipPackFile -Destination $ZipPackArchive
+    New-Item -ItemType Directory -Path $ZipPackFolder -Force | Out-Null
+    Remove-Item -Recurse -Force -Path $ZipPackFolder
+    Expand-Archive -Path $ZipPackArchive -DestinationPath $ZipPackFolder
+    Remove-Item -Path $ZipPackArchive
 }
-
-# function Expand-DellZipPack {
-#     param (
-#         $ZipPackFileBaseName,
-#         $ZipPackDescription,
-#         $DownloadsFolder,
-#         $DriversFolder
-#     )
-#     $ZipPackFolder = (Join-Path -Path $DriversFolder -ChildPath $ZipPackFileBaseName)
-#     Write-Host "Unpack $ZipPackDescription to $ZipPackFolder"
-#     $ZipPackFile = (Join-Path -Path $DownloadsFolder -ChildPath "$ZipPackFileBaseName.exe")
-#     $ZipPackArchive = (Join-Path -Path $DownloadsFolder -ChildPath "$ZipPackFileBaseName.zip")
-#     Copy-Item -Path $ZipPackFile -Destination $ZipPackArchive
-#     New-Item -ItemType Directory -Path $ZipPackFolder -Force | Out-Null
-#     Remove-Item -Recurse -Force -Path $ZipPackFolder
-#     # # Prevent issues with CLI non-interactive execution
-#     # # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
-#     # $GlobalProgressPreference = $global:ProgressPreference
-#     # $global:ProgressPreference = "SilentlyContinue"
-#     # Expand-Archive -Path $ZipPackArchive -DestinationPath $ZipPackFolder
-#     # $global:ProgressPreference = $GlobalProgressPreference
-#     Expand-Archive-Silent -Path $ZipPackArchive -DestinationPath $ZipPackFolder
-#     Remove-Item -Path $ZipPackArchive
-# }
 
 function Expand-InnoInstaller {
     param (
@@ -141,7 +127,7 @@ function Expand-InnoInstaller {
     $InnoExtractPath = (Join-Path -Path $InnoExtractFolder -ChildPath "innoextract.exe")
     if (-Not (Test-Path -Path $InnoExtractPath -PathType Leaf)) {
         $InnoExtractArchive = (Join-Path -Path $DownloadsFolder -ChildPath $InnoExtractFileName)
-        Expand-Archive-Silent -Path $InnoExtractArchive -DestinationPath $InnoExtractFolder
+        Expand-Archive -Path $InnoExtractArchive -DestinationPath $InnoExtractFolder
     }
     Write-Host "Expand $Path to $DestinationPath"
     Start-Process -FilePath $InnoExtractPath -ArgumentList "--extract --output-dir `"$DestinationPath`" --silent `"$Path`"" -Wait
@@ -165,6 +151,10 @@ $HpSoftPacks = @(
     (65376, "Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014"),
     (64673, "NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013"),
     (64682, "Broadcom GPS Driver 19.17 Dec 6, 2013")
+    # (64292, "HP ElitePad 900 Microsoft Windows 8.1 x86 Driver Pack 1.00 Rev.A Nov 6, 2013") # ,
+    # (66596, "HP ElitePad 900 Driver and Firmware Update 1.0.1.8 Rev.A May 28, 2014"),
+    # (65096, "HP Driver Access Service Layer (DASL) Application 6.2.13.1 Rev.A Jan 27, 2014"),
+    # (64636, "HP BIOS Settings 1.1.7.1 Rev.A Dec 3, 2013")
 )
 For ($Index = 0; $Index -lt $HpSoftPacks.Length; $Index++) {
     $Number, $Description = $HpSoftPacks[$Index]
@@ -176,41 +166,30 @@ For ($Index = 0; $Index -lt $HpSoftPacks.Length; $Index++) {
     Expand-HpSoftPack -Number $Number -Description $Description -SourceFolder $DownloadsFolder -DestinationFolder $DriversFolder
 }
 
-Write-Host "Remove DASL/Win8 from HP SoftPack 71504"
-Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
+$AlterSP71504 = $false;
+if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
+    Write-Host "Remove DASL/Win8 from HP SoftPack 71504"
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
+}
 
-Write-Host "Expand HP SoftPack 64673 installer"
-# $HpSoftPack64673 = (Join-Path -Path $DriversFolder -ChildPath "sp64673/NXP_NFC_Driver_Package_Setup.exe")
-$HpSoftPack64673Folder = (Join-Path -Path $DriversFolder -ChildPath "sp64673")
-$HpSoftPack64673 = (Join-Path -Path $HpSoftPack64673Folder -ChildPath "*.exe" -Resolve)
-Expand-InnoInstaller -Path $HpSoftPack64673 -DestinationPath $HpSoftPack64673Folder -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -WorkFolder $WorkFolder
+if (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp64673")) {
+    Write-Host "Expand HP SoftPack 64673 installer"
+    $HpSoftPack64673Folder = (Join-Path -Path $DriversFolder -ChildPath "sp64673")
+    $HpSoftPack64673 = (Join-Path -Path $HpSoftPack64673Folder -ChildPath "*.exe" -Resolve)
+    Expand-InnoInstaller -Path $HpSoftPack64673 -DestinationPath $HpSoftPack64673Folder -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -WorkFolder $WorkFolder
+}
 
-# # Download Dell Broadcom GPS Driver for Windows 8.1
-# # https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p0p15
-# # HP SoftPack provided installer does not run on Windows 10
-# # Dell provided one runs on Windows 10
-# # and can be expanded and streamlined from the command line
+# Download Dell Broadcom GPS Driver for Windows 8.1
+# https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p0p15
+# HP SoftPack provided installer does not run on Windows 10
+# Dell provided one runs on Windows 10
+# and can be expanded and streamlined from the command line
 
-# $ZipPackFileBaseName = "GPS_BCM4751_W8_A02-P0P15_ZPE"
-# # $ZipPackFileName = "$ZipPackFileBaseName.exe"
-# $ZipPackUrl = "https://dl.dell.com/FOLDER00998748M/3/GPS_BCM4751_W8_A02-P0P15_ZPE.exe"
-# $ZipPackDescription = "Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012"
-# # Get-File -File $ZipPackFileName -DownloadFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ZipPackUrl -Description $ZipPackDescription
-# Get-File -File "$ZipPackFileBaseName.exe" -DownloadFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ZipPackUrl -Description $ZipPackDescription
-# # $ZipPackFolder = (Join-Path -Path $DriversFolder -ChildPath $ZipPackFileBaseName)
-# # Write-Host "Unpack $ZipPackDescription to $ZipPackFolder"
-# # $ZipPackFile = (Join-Path -Path $DownloadsFolder -ChildPath $ZipPackFileName)
-# # $ZipPackArchive = "$ZipPackFileBaseName.zip"
-# # Copy-Item -Path $ZipPackFile -Destination $ZipPackArchive
-# # New-Item -ItemType Directory -Path $ZipPackFolder -Force | Out-Null
-# # Remove-Item -Recurse -Force -Path $ZipPackFolder
-# # # Prevent issues with CLI non-interactive execution
-# # # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
-# # $global:ProgressPreference = "SilentlyContinue"
-# # Expand-Archive -Path $ZipPackArchive -DestinationPath $ZipPackFolder
-# # $global:ProgressPreference = "Continue"
-# # Remove-Item -Path $ZipPackArchive
-# Expand-DellZipPack -ZipPackFileBaseName $ZipPackFileBaseName -ZipPackDescription $ZipPackDescription -DownloadsFolder $DownloadsFolder -DriversFolder $DriversFolder
+$ZipPackFileBaseName = "GPS_BCM4751_W8_A02-P0P15_ZPE"
+$ZipPackUrl = "https://dl.dell.com/FOLDER00998748M/3/GPS_BCM4751_W8_A02-P0P15_ZPE.exe"
+$ZipPackDescription = "Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012"
+Get-File -File "$ZipPackFileBaseName.exe" -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ZipPackUrl -Description $ZipPackDescription
+Expand-DellZipPack -ZipPackFileBaseName $ZipPackFileBaseName -ZipPackDescription $ZipPackDescription -DownloadsFolder $DownloadsFolder -DriversFolder $DriversFolder
 
 Write-Host "Available drivers:"
 $DriverInfFiles = (Get-ChildItem -Recurse -Filter "*.inf" -Path $DriversFolder)
@@ -221,29 +200,25 @@ Write-Host "Available drivers count: $DriverInfFilesCount"
 # Download Windows 10 Pro x32 ISO
 # https://www.microsoft.com/en-us/software-download/windows10ISO
 
-$ImageRelease = "1703"
-$ImageSuffix = ""
-# $ImageRelease = "22H2"
-# $ImageSuffix = "v1"
+$ImageRelease = "22H2"
+$ImageSuffix = "v1"
 $ImageLanguage = "English"
-# $ImageLanguage = "French"
 $ImageFileName = "Win10_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
 $ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
 $ImageDescription = "Windows 10 Pro x86 ISO release $ImageRelease with $ImageLanguage language"
 
-# if (Test-Path $ImagePath -PathType leaf) {
-#     Write-Host "Found $ImageDescription as $ImagePath"
-# }
-# else {
-#     Write-Host "Get $ImageDescription download URL"
-#     # Windows ISO Downloader
-#     # https://github.com/pbatard/Fido
-#     $FidoFileName = "Fido.ps1"
-#     Get-File -FileName $FidoFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url "https://raw.githubusercontent.com/pbatard/Fido/master/Fido.ps1" -Description "Windows ISO downloader"
-#     $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
-#     $ImageUrl = (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
-#     Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ImageUrl -Description $ImageDescription
-# }
+if (Test-Path $ImagePath -PathType leaf) {
+    Write-Host "Found $ImageDescription as $ImagePath"
+} else {
+    Write-Host "Get $ImageDescription download URL"
+    # Windows ISO Downloader
+    # https://github.com/pbatard/Fido
+    $FidoFileName = "Fido.ps1"
+    Get-File -FileName $FidoFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url "https://raw.githubusercontent.com/pbatard/Fido/master/Fido.ps1" -Description "Windows ISO downloader"
+    $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
+    $ImageUrl = (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
+    Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ImageUrl -Description $ImageDescription
+}
 
 Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
     Write-Host "Get $ImageDescription download URL"
@@ -264,56 +239,61 @@ Copy-Files -Path "$DriveLetter`:" -DestinationPath $WorkFolder -FileNamePattern 
 Write-Host "Unmount $ImageDescription"
 Dismount-DiskImage -ImagePath $ImagePath | Out-Null
 
-$SourcesFolder = (Join-Path $WorkFolder "sources")
-$BootWim = (Join-Path $SourcesFolder "boot.wim")
-$InstallWim = (Join-Path $SourcesFolder "install.wim")
-$InstallWimSlim = (Join-Path $SourcesFolder "install.slim.wim")
+$SlipstreamDrivers = $false
+If ($SlipstreamDrivers) {
 
-Write-Host "Find image index for Windows 10 Pro variant"
-$ImageName = Get-WindowsImage -ImagePath $InstallWim | Select-Object -ExpandProperty ImageName | Select-String -Pattern 'Pro' | Select-Object -ExpandProperty Line -First 1
-Write-Host "Windows 10 Pro found with name $ImageName"
-$ImageIndex = Get-WindowsImage -ImagePath $InstallWim -Name $ImageName | Select-Object -ExpandProperty ImageIndex
-Write-Host "Windows 10 Pro found with index $ImageIndex"
+    $SourcesFolder = (Join-Path $WorkFolder "sources")
+    $BootWim = (Join-Path $SourcesFolder "boot.wim")
+    $InstallWim = (Join-Path $SourcesFolder "install.wim")
+    $InstallWimSlim = (Join-Path $SourcesFolder "install.slim.wim")
 
-Write-Host "Create mount point"
-$WimMount = "C:\wim_mount"
-New-Item -Path $WimMount -ItemType directory -Force | Out-Null
+    Write-Host "Find image index for Windows 10 Pro variant"
+    $ImageName = Get-WindowsImage -ImagePath $InstallWim | Select-Object -ExpandProperty ImageName | Select-String -Pattern 'Pro' | Select-Object -ExpandProperty Line -First 1
+    Write-Host "Windows 10 Pro found with name $ImageName"
+    $ImageIndex = Get-WindowsImage -ImagePath $InstallWim -Name $ImageName | Select-Object -ExpandProperty ImageIndex
+    Write-Host "Windows 10 Pro found with index $ImageIndex"
 
-Write-Host "Prepare WinPE image"
-Mount-WindowsImage -ImagePath $BootWim -Index 1 -Path $WimMount | Out-Null
-Write-Host "Add drivers"
-Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-Clear-WindowsCorruptMountPoint | Out-Null
+    Write-Host "Create mount point"
+    $WimMount = "C:\wim_mount"
+    New-Item -Path $WimMount -ItemType directory -Force | Out-Null
 
-Write-Host "Prepare Setup image"
-Mount-WindowsImage -ImagePath $BootWim -Index 2 -Path $WimMount | Out-Null
-Write-Host "Add drivers"
-Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-Clear-WindowsCorruptMountPoint | Out-Null
+    Write-Host "Prepare WinPE image"
+    Mount-WindowsImage -ImagePath $BootWim -Index 1 -Path $WimMount | Out-Null
+    Write-Host "Add drivers"
+    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
+    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
+    Clear-WindowsCorruptMountPoint | Out-Null
 
-Write-Host "Prepare Install image"
-Mount-WindowsImage -ImagePath $InstallWim -Index $ImageIndex -Path $WimMount | Out-Null
-Write-Host "Add drivers"
-Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-# Write-Host "Enable SMB1 Client"
-# Enable-WindowsOptionalFeature -Path $WimMount -FeatureName "smb1protocol-client" -All | Out-Null
-Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-Clear-WindowsCorruptMountPoint | Out-Null
+    Write-Host "Prepare Setup image"
+    Mount-WindowsImage -ImagePath $BootWim -Index 2 -Path $WimMount | Out-Null
+    Write-Host "Add drivers"
+    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
+    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
+    Clear-WindowsCorruptMountPoint | Out-Null
 
-Write-Host "Keep only Windows 10 Pro variant"
-Export-WindowsImage -SourceImagePath $InstallWim -SourceIndex $ImageIndex -DestinationImagePath $InstallWimSlim -CompressionType Max | Out-Null
-Remove-Item -Path $InstallWim
-Rename-Item -Path $InstallWimSlim -NewName $InstallWim
+    Write-Host "Prepare Install image"
+    Mount-WindowsImage -ImagePath $InstallWim -Index $ImageIndex -Path $WimMount | Out-Null
+    Write-Host "Add drivers"
+    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
+    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
+    Clear-WindowsCorruptMountPoint | Out-Null
 
-Write-Host "Remove mount point"
-Remove-Item $WimMount | Out-Null
+    Write-Host "Keep only Windows 10 Pro variant"
+    Export-WindowsImage -SourceImagePath $InstallWim -SourceIndex $ImageIndex -DestinationImagePath $InstallWimSlim -CompressionType Max | Out-Null
+    Remove-Item -Path $InstallWim
+    Rename-Item -Path $InstallWimSlim -NewName $InstallWim
 
-# Write-Host "Add unattended install configuration"
-# Copy-Files -Path $ScriptFolder -DestinationPath $WorkFolder -FileNamePattern "autounattended.xml"
+    Write-Host "Remove mount point"
+    Remove-Item $WimMount | Out-Null
 
+}
+
+Write-Host "Add drivers add and export scripts"
+Copy-Files -Path $ScriptFolder -DestinationPath $DriversFolder -FileNamePattern "drivers-*.bat"
+
+Write-Host "Copy installation files to origin location"
 $TargetDirectory = (Join-Path -Path $ScriptFolder -ChildPath "ELITEPAD900")
+if (Test-Path -Path $TargetDirectory) {
+    Remove-Item -Path $TargetDirectory -Recurse -Force | Out-Null
+}
 Copy-Files -Path $WorkFolder -DestinationPath $TargetDirectory -FileNamePattern "*.*"
-
-# $ProgressPreference = "Continue"
