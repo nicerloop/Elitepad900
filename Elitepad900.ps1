@@ -284,7 +284,8 @@ If ($SlipstreamDrivers) {
 }
 
 Write-Host "Add drivers add and export scripts"
-Copy-Files -Path $ScriptFolder -DestinationPath $DriversFolder -FileNamePattern "drivers-*.bat"
+$DriversScriptsFolder = (Join-Path -Path $ScriptFolder -ChildPath "drivers-scripts")
+Copy-Files -Path $DriversScriptsFolder -DestinationPath $DriversFolder -FileNamePattern "drivers-*.bat"
 
 Write-Host "Copy installation files to origin location"
 $TargetDirectory = (Join-Path -Path $ScriptFolder -ChildPath "ELITEPAD900")
