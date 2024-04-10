@@ -8,6 +8,7 @@ $ErrorActionPreference = "Stop"
 
 # Prevent issues with CLI non-interactive execution
 # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
+Write-Host "Disable progress bars for CLI non-interactive execution"
 $ProgressPreference = "SilentlyContinue"
 $global:ProgressPreference = "SilentlyContinue"
 
@@ -133,8 +134,6 @@ function Expand-InnoInstaller {
     Start-Process -FilePath $InnoExtractPath -ArgumentList "--extract --output-dir `"$DestinationPath`" --silent `"$Path`"" -Wait
 }
 
-Write-Host "Disable progress bars for CLI non-interactive execution"
-$ProgressPreference = "SilentlyContinue"
 
 Write-Host "Define work folders location"
 $ScriptFolder = $PSScriptRoot
