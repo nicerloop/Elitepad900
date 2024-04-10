@@ -165,12 +165,14 @@ For ($Index = 0; $Index -lt $HpSoftPacks.Length; $Index++) {
     Expand-HpSoftPack -Number $Number -Description $Description -SourceFolder $DownloadsFolder -DestinationFolder $DriversFolder
 }
 
+# sp71504 contains two sets of drivers for Win8 and Win8.1
 $AlterSP71504 = $false;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
     Write-Host "Remove DASL/Win8 from HP SoftPack 71504"
     Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
 }
 
+# sp64673 must be expanded to access the drivers
 if (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp64673")) {
     Write-Host "Expand HP SoftPack 64673 installer"
     $HpSoftPack64673Folder = (Join-Path -Path $DriversFolder -ChildPath "sp64673")
@@ -178,12 +180,9 @@ if (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp64673")) {
     Expand-InnoInstaller -Path $HpSoftPack64673 -DestinationPath $HpSoftPack64673Folder -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -WorkFolder $WorkFolder
 }
 
+# sp64682 does not run on Windows 10
 # Download Dell Broadcom GPS Driver for Windows 8.1
 # https://www.dell.com/support/home/en-us/drivers/driversdetails?driverid=p0p15
-# HP SoftPack provided installer does not run on Windows 10
-# Dell provided one runs on Windows 10
-# and can be expanded and streamlined from the command line
-
 $ZipPackFileBaseName = "GPS_BCM4751_W8_A02-P0P15_ZPE"
 $ZipPackUrl = "https://dl.dell.com/FOLDER00998748M/3/GPS_BCM4751_W8_A02-P0P15_ZPE.exe"
 $ZipPackDescription = "Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012"
