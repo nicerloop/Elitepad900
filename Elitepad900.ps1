@@ -1,8 +1,7 @@
 #Requires -Version 5.1
 $ErrorActionPreference = "Stop"
 
-# StrictMode makes Fido fail
-# Set-StrictMode -Version 3
+Set-StrictMode -Version 3
 
 # Set-PSDebug -Trace 2
 
@@ -134,6 +133,22 @@ function Expand-InnoInstaller {
     Start-Process -FilePath $InnoExtractPath -ArgumentList "--extract --output-dir `"$DestinationPath`" --silent `"$Path`"" -Wait
 }
 
+function Get-Windows10-Iso-Url {
+    param (
+        [Parameter(Mandatory)] $DownloadsFolder,
+        [Parameter(Mandatory)] $BackupFolder,
+        [Parameter(Mandatory)] $ImageRelease,
+        [Parameter(Mandatory)] $ImageLanguage
+    )
+    # Windows ISO Downloader
+    # https://github.com/pbatard/Fido
+    $FidoFileName = "Fido.ps1"
+    Get-File -FileName $FidoFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url "https://raw.githubusercontent.com/pbatard/Fido/master/Fido.ps1" -Description "Windows ISO downloader"
+    $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
+    # StrictMode makes Fido fail
+    Set-StrictMode -Off
+    (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
+}
 
 Write-Host "Define work folders location"
 $ScriptFolder = $PSScriptRoot
@@ -205,27 +220,9 @@ $ImageFileName = "Win10_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
 $ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
 $ImageDescription = "Windows 10 Pro x86 ISO release $ImageRelease with $ImageLanguage language"
 
-if (Test-Path $ImagePath -PathType leaf) {
-    Write-Host "Found $ImageDescription as $ImagePath"
-} else {
-    Write-Host "Get $ImageDescription download URL"
-    # Windows ISO Downloader
-    # https://github.com/pbatard/Fido
-    $FidoFileName = "Fido.ps1"
-    Get-File -FileName $FidoFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url "https://raw.githubusercontent.com/pbatard/Fido/master/Fido.ps1" -Description "Windows ISO downloader"
-    $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
-    $ImageUrl = (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
-    Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ImageUrl -Description $ImageDescription
-}
-
 Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
     Write-Host "Get $ImageDescription download URL"
-    # Windows ISO Downloader
-    # https://github.com/pbatard/Fido
-    $FidoFileName = "Fido.ps1"
-    Get-File -FileName $FidoFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url "https://raw.githubusercontent.com/pbatard/Fido/master/Fido.ps1" -Description "Windows ISO downloader"
-    $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
-    (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
+    Get-Windows10-Iso-Url -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageRelease $ImageRelease -ImageLanguage $ImageLanguage
 }
 
 Write-Host "Get install files from ISO"
