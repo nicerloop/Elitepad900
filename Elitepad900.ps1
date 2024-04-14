@@ -184,12 +184,13 @@ For ($Index = 0; $Index -lt $HpSoftPaqs.Length; $Index++) {
 }
 
 # sp71504 contains two sets of drivers for Win8 and Win8.1
-$AlterSP71504 = $false;
+$AlterSP71504 = $true;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
-    Write-Host "Remove DASL/Win8 from HP SoftPaq 71504"
-    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
+    Write-Host "Remove DASL from HP SoftPaq 71504"
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL") -Recurse
     Write-Host "Remove Audio drivers from HP SoftPaq 71504"
     Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Audio") -Recurse
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Camera") -Recurse
 }
 
 # sp64673 must be expanded to access the drivers
