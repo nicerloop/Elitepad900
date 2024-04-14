@@ -249,7 +249,7 @@ Copy-Files -Path "$DriveLetter`:" -DestinationPath $WorkFolder -FileNamePattern 
 Write-Host "Unmount $ImageDescription"
 Dismount-DiskImage -ImagePath $ImagePath | Out-Null
 
-$SlipstreamDrivers = $false
+$SlipstreamDrivers = $true
 function Add-Drivers {
     param (
         [Parameter(Mandatory)] $ImageDescription,
