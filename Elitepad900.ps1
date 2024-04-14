@@ -213,6 +213,9 @@ $DriverInfFiles | Select-Object -ExpandProperty FullName
 $DriverInfFilesCount = ($DriverInfFiles).count
 Write-Host "Available drivers count: $DriverInfFilesCount"
 
+$WindowsInstaller = $true
+if ($WindowsInstaller) {
+
 # Download Windows x32 ISO
 # https://www.microsoft.com/en-us/software-download/windows8ISO
 # https://www.microsoft.com/en-us/software-download/windows10ISO
@@ -290,6 +293,8 @@ If ($SlipstreamDrivers) {
 
     Write-Host "Remove mount point"
     Remove-Item $WimMount | Out-Null
+
+}
 
 }
 
