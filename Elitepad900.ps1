@@ -248,6 +248,22 @@ Write-Host "Unmount $ImageDescription"
 Dismount-DiskImage -ImagePath $ImagePath | Out-Null
 
 $SlipstreamDrivers = $false
+function Add-Drivers {
+    param (
+        [Parameter(Mandatory)] $ImageDescription,
+        [Parameter(Mandatory)] $ImagePath,
+        [Parameter(Mandatory)] $ImageIndex,
+        [Parameter(Mandatory)] $MountPath,
+        [Parameter(Mandatory)] $DriversFolder
+    )
+    Write-Host "Prepare $ImageDescription image"
+    Mount-WindowsImage -ImagePath $ImagePath -Index $ImageIndex -Path $MountPath | Out-Null
+    Write-Host "Add drivers"
+    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
+    Dismount-WindowsImage -Path $MountPath -Save | Out-Null
+    Clear-WindowsCorruptMountPoint | Out-Null
+}
+
 If ($SlipstreamDrivers) {
 
     $SourcesFolder = (Join-Path $WorkFolder "sources")
@@ -265,26 +281,9 @@ If ($SlipstreamDrivers) {
     $WimMount = "C:\wim_mount"
     New-Item -Path $WimMount -ItemType directory -Force | Out-Null
 
-    Write-Host "Prepare WinPE image"
-    Mount-WindowsImage -ImagePath $BootWim -Index 1 -Path $WimMount | Out-Null
-    Write-Host "Add drivers"
-    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-    Clear-WindowsCorruptMountPoint | Out-Null
-
-    Write-Host "Prepare Setup image"
-    Mount-WindowsImage -ImagePath $BootWim -Index 2 -Path $WimMount | Out-Null
-    Write-Host "Add drivers"
-    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-    Clear-WindowsCorruptMountPoint | Out-Null
-
-    Write-Host "Prepare Install image"
-    Mount-WindowsImage -ImagePath $InstallWim -Index $ImageIndex -Path $WimMount | Out-Null
-    Write-Host "Add drivers"
-    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-    Dismount-WindowsImage -Path $WimMount -Save | Out-Null
-    Clear-WindowsCorruptMountPoint | Out-Null
+    Add-Drivers -ImageDescription "WinPE" -ImagePath $BootWim -ImageIndex 1 -MountPath $WimMount -DriversFolder $DriversFolder
+    Add-Drivers -ImageDescription "Setup" -ImagePath $BootWim -ImageIndex 2 -MountPath $WimMount -DriversFolder $DriversFolder
+    Add-Drivers -ImageDescription "Install" -ImagePath $InstallWim -ImageIndex $ImageIndex -MountPath $WimMount -DriversFolder $DriversFolder
 
     Write-Host "Keep only Windows 10 Pro variant"
     Export-WindowsImage -SourceImagePath $InstallWim -SourceIndex $ImageIndex -DestinationImagePath $InstallWimSlim -CompressionType Max | Out-Null
