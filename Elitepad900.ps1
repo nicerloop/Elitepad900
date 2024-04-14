@@ -61,7 +61,7 @@ function Get-File {
     }
 }
 
-function Get-HpSoftPack {
+function Get-HpSoftPaq {
     param (
         [Parameter(Mandatory)] $Number,
         [Parameter(Mandatory)] $Description,
@@ -74,10 +74,10 @@ function Get-HpSoftPack {
     $Min = $M * 1000 + $D * 500 + 1
     $Max = $M * 1000 + ($D + 1) * 500
     $Url = "https://ftp.hp.com/pub/softpaq/sp$Min-$Max/$File"
-    Get-File -File $File -DestinationFolder $DestinationFolder -BackupFolder $BackupFolder -Url $Url -Description "HP SoftPack $Number $Description"
+    Get-File -File $File -DestinationFolder $DestinationFolder -BackupFolder $BackupFolder -Url $Url -Description "HP SoftPaq $Number $Description"
 }
 
-function Expand-HpSoftPack {
+function Expand-HpSoftPaq {
     param (
         [Parameter(Mandatory)] $Number,
         [Parameter(Mandatory)] $Description,
@@ -87,7 +87,7 @@ function Expand-HpSoftPack {
     $File = "sp$Number.exe"
     $FilePath = (Join-Path -Path $SourceFolder -ChildPath $File)
     $Folder = (Join-Path -Path $DestinationFolder -ChildPath "sp$Number")
-    Write-Host "Expand HP SoftPack $Number $Description to $Folder"
+    Write-Host "Expand HP SoftPaq $Number $Description to $Folder"
     Start-Process -FilePath $FilePath -ArgumentList "/s /e /f `"$Folder`"" -Wait
 }
 
@@ -160,7 +160,7 @@ $BackupFolder = (Join-Path -Path $ScriptFolder -ChildPath "Downloads")
 
 Write-Host "Download HP Elitepad900 drivers for Windows 8.1"
 # https://support.hp.com/us-en/drivers/selfservice/hp-elitepad-900-g1-tablet/5298028
-$HpSoftPacks = @(
+$HpSoftPaqs = @(
     (71504, "HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015"),
     # (65924, "Atmel Touchscreen Firmware Update Utility for HP ElitePad 900 without Stylus Support 20AC0303_20140326 Rev. Apr 1, 2014"),
     # (60523, "Atmel Touchscreen Power Management Settings"),
@@ -173,31 +173,31 @@ $HpSoftPacks = @(
     # (65096, "HP Driver Access Service Layer (DASL) Application 6.2.13.1 Rev.A Jan 27, 2014"),
     # (64636, "HP BIOS Settings 1.1.7.1 Rev.A Dec 3, 2013")
 )
-For ($Index = 0; $Index -lt $HpSoftPacks.Length; $Index++) {
-    $Number, $Description = $HpSoftPacks[$Index]
-    Get-HpSoftPack -Number $Number -Description $Description -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder
+For ($Index = 0; $Index -lt $HpSoftPaqs.Length; $Index++) {
+    $Number, $Description = $HpSoftPaqs[$Index]
+    Get-HpSoftPaq -Number $Number -Description $Description -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder
 }
 Write-Host "Expand HP Elitepad900 drivers for Windows 8.1"
-For ($Index = 0; $Index -lt $HpSoftPacks.Length; $Index++) {
-    $Number, $Description = $HpSoftPacks[$Index]
-    Expand-HpSoftPack -Number $Number -Description $Description -SourceFolder $DownloadsFolder -DestinationFolder $DriversFolder
+For ($Index = 0; $Index -lt $HpSoftPaqs.Length; $Index++) {
+    $Number, $Description = $HpSoftPaqs[$Index]
+    Expand-HpSoftPaq -Number $Number -Description $Description -SourceFolder $DownloadsFolder -DestinationFolder $DriversFolder
 }
 
 # sp71504 contains two sets of drivers for Win8 and Win8.1
 $AlterSP71504 = $false;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
-    Write-Host "Remove DASL/Win8 from HP SoftPack 71504"
+    Write-Host "Remove DASL/Win8 from HP SoftPaq 71504"
     Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
-    Write-Host "Remove Audio drivers from HP SoftPack 71504"
+    Write-Host "Remove Audio drivers from HP SoftPaq 71504"
     Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Audio") -Recurse
 }
 
 # sp64673 must be expanded to access the drivers
 if (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp64673")) {
-    Write-Host "Expand HP SoftPack 64673 installer"
-    $HpSoftPack64673Folder = (Join-Path -Path $DriversFolder -ChildPath "sp64673")
-    $HpSoftPack64673 = (Join-Path -Path $HpSoftPack64673Folder -ChildPath "*.exe" -Resolve)
-    Expand-InnoInstaller -Path $HpSoftPack64673 -DestinationPath $HpSoftPack64673Folder -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -WorkFolder $WorkFolder
+    Write-Host "Expand HP SoftPaq 64673 installer"
+    $HpSoftPaq64673Folder = (Join-Path -Path $DriversFolder -ChildPath "sp64673")
+    $HpSoftPaq64673 = (Join-Path -Path $HpSoftPaq64673Folder -ChildPath "*.exe" -Resolve)
+    Expand-InnoInstaller -Path $HpSoftPaq64673 -DestinationPath $HpSoftPaq64673Folder -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -WorkFolder $WorkFolder
 }
 
 # sp64682 does not run on Windows 10
