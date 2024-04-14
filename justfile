@@ -1,6 +1,5 @@
 build:
-    vagrant up
-    vagrant snapshot restore clean || vagrant snapshot save clean
+    vagrant snapshot restore clean || (vagrant up && vagrant snapshot save clean)
     vagrant ssh -- powershell C:/vagrant/Elitepad900.ps1
 
 clean:
