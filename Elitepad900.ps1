@@ -188,6 +188,8 @@ $AlterSP71504 = $false;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
     Write-Host "Remove DASL/Win8 from HP SoftPack 71504"
     Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL/DASL/Win8") -Recurse
+    Write-Host "Remove Audio drivers from HP SoftPack 71504"
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Audio") -Recurse
 }
 
 # sp64673 must be expanded to access the drivers
