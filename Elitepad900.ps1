@@ -133,11 +133,12 @@ function Expand-InnoInstaller {
     Start-Process -FilePath $InnoExtractPath -ArgumentList "--extract --output-dir `"$DestinationPath`" --silent `"$Path`"" -Wait
 }
 
-function Get-Windows10-Iso-Url {
+function Get-WindowsIsoUrl {
     param (
         [Parameter(Mandatory)] $DownloadsFolder,
         [Parameter(Mandatory)] $BackupFolder,
-        [Parameter(Mandatory)] $ImageRelease,
+        [Parameter(Mandatory)] $ImageVersion,
+        [Parameter(Mandatory)] $ImageEdition,
         [Parameter(Mandatory)] $ImageLanguage
     )
     # Windows ISO Downloader
@@ -147,7 +148,7 @@ function Get-Windows10-Iso-Url {
     $FidoFile = (Join-Path -Path $DownloadsFolder -ChildPath $FidoFileName)
     # StrictMode makes Fido fail
     Set-StrictMode -Off
-    (& $FidoFile -Win 10 -Rel $ImageRelease -Ed Pro -Lang $ImageLanguage -Arch x86 -GetUrl)
+    (& $FidoFile -Win $ImageVersion -Ed $ImageEdition -Lang $ImageLanguage -Arch x86 -GetUrl)
 }
 
 Write-Host "Define work folders location"
@@ -210,19 +211,26 @@ $DriverInfFiles | Select-Object -ExpandProperty FullName
 $DriverInfFilesCount = ($DriverInfFiles).count
 Write-Host "Available drivers count: $DriverInfFilesCount"
 
-# Download Windows 10 Pro x32 ISO
+# Download Windows x32 ISO
+# https://www.microsoft.com/en-us/software-download/windows8ISO
 # https://www.microsoft.com/en-us/software-download/windows10ISO
 
+# $ImageVersion = "8.1"
+# $ImageEdition = "Standard"
+$ImageVersion = "10"
+$ImageEdition = "Pro"
 $ImageRelease = "22H2"
 $ImageSuffix = "v1"
-$ImageLanguage = "English"
-$ImageFileName = "Win10_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
+$ImageLanguage = "French"
+$ImageFileName = "Win${ImageVersion}_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
+# $ImageFileName = "Win${ImageVersion}_${ImageLanguage}_x32.iso"
 $ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
-$ImageDescription = "Windows 10 Pro x86 ISO release $ImageRelease with $ImageLanguage language"
+# $ImageDescription = "Windows 10 Pro x86 ISO release $ImageRelease with $ImageLanguage language"
+$ImageDescription = "Windows ${ImageVersion} ${ImageEdition} x86 ISO with $ImageLanguage language"
 
 Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
     Write-Host "Get $ImageDescription download URL"
-    Get-Windows10-Iso-Url -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageRelease $ImageRelease -ImageLanguage $ImageLanguage
+    Get-WindowsIsoUrl -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion $ImageVersion -ImageEdition $ImageEdition -ImageLanguage $ImageLanguage
 }
 
 Write-Host "Get install files from ISO"
@@ -242,11 +250,11 @@ If ($SlipstreamDrivers) {
     $InstallWim = (Join-Path $SourcesFolder "install.wim")
     $InstallWimSlim = (Join-Path $SourcesFolder "install.slim.wim")
 
-    Write-Host "Find image index for Windows 10 Pro variant"
+    Write-Host "Find image index for Windows $ImageVersion Professional variant"
     $ImageName = Get-WindowsImage -ImagePath $InstallWim | Select-Object -ExpandProperty ImageName | Select-String -Pattern 'Pro' | Select-Object -ExpandProperty Line -First 1
-    Write-Host "Windows 10 Pro found with name $ImageName"
+    Write-Host "Windows $ImageVersion Professional found with name $ImageName"
     $ImageIndex = Get-WindowsImage -ImagePath $InstallWim -Name $ImageName | Select-Object -ExpandProperty ImageIndex
-    Write-Host "Windows 10 Pro found with index $ImageIndex"
+    Write-Host "Windows $ImageVersion Professional found with index $ImageIndex"
 
     Write-Host "Create mount point"
     $WimMount = "C:\wim_mount"
