@@ -162,6 +162,8 @@ Write-Host "Download HP Elitepad900 drivers for Windows 8.1"
 # https://support.hp.com/us-en/drivers/selfservice/hp-elitepad-900-g1-tablet/5298028
 $HpSoftPacks = @(
     (71504, "HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015"),
+    # (65924, "Atmel Touchscreen Firmware Update Utility for HP ElitePad 900 without Stylus Support 20AC0303_20140326 Rev. Apr 1, 2014"),
+    # (60523, "Atmel Touchscreen Power Management Settings"),
     (65877, "Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014"),
     (65376, "Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014"),
     (64673, "NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013"),
