@@ -1,32 +1,44 @@
+vagrant snapshot restore clean || (vagrant up && vagrant snapshot save clean)
+==> default: Forcing shutdown of VM...
+==> default: Restoring the snapshot 'clean'...
+==> default: Checking if box 'gusztavvargadr/windows-server-core' version '2102.0.2403' is up to date...
+==> default: Resuming suspended VM...
+==> default: Booting VM...
+==> default: Waiting for machine to boot. This may take a few minutes...
+    default: SSH address: 127.0.0.1:2222
+    default: SSH username: vagrant
+    default: SSH auth method: private key
+==> default: Machine booted and ready!
+==> default: Machine already provisioned. Run `vagrant provision` or use the `--provision`
+==> default: flag to force provisioning. Provisioners marked to run always will still run.
+vagrant ssh -- powershell C:/vagrant/Elitepad900.ps1
 Disable progress bars for CLI non-interactive execution
 Define work folders location
 Download HP Elitepad900 drivers for Windows 8.1
-Found HP SoftPack 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 as C:\vagrant\Downloads\sp71504.exe
+Found HP SoftPaq 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 as C:\vagrant\Downloads\sp71504.exe
 Copy sp71504.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found HP SoftPack 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 as C:\vagrant\Downloads\sp65877.exe
+Found HP SoftPaq 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 as C:\vagrant\Downloads\sp65877.exe
 Copy sp65877.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found HP SoftPack 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 as C:\vagrant\Downloads\sp65376.exe
+Found HP SoftPaq 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 as C:\vagrant\Downloads\sp65376.exe
 Copy sp65376.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found HP SoftPack 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 as C:\vagrant\Downloads\sp64673.exe
+Found HP SoftPaq 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 as C:\vagrant\Downloads\sp64673.exe
 Copy sp64673.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found HP SoftPack 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 as C:\vagrant\Downloads\sp64682.exe
+Found HP SoftPaq 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 as C:\vagrant\Downloads\sp64682.exe
 Copy sp64682.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
 Expand HP Elitepad900 drivers for Windows 8.1
-Expand HP SoftPack 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 to C:\Users\vagrant\ELITEPAD900\drivers\sp71504
-Expand HP SoftPack 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65877
-Expand HP SoftPack 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65376
-Expand HP SoftPack 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64673
-Expand HP SoftPack 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64682
-Expand HP SoftPack 64673 installer
+Expand HP SoftPaq 71504 HP Elitepad 900 System BIOS/Firmware and Driver Update 1.0.2.3 Rev.A Jun 3, 2015 to C:\Users\vagrant\ELITEPAD900\drivers\sp71504
+Expand HP SoftPaq 65877 Qualcomm Atheros AR600x 802.11a/b/g/n Wireless LAN Driver 3.7 C Apr 18, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65877
+Expand HP SoftPaq 65376 Qualcomm Atheros AR3002 Bluetooth 4.0+HS Driver for Microsoft Windows 2.2 Rev.A Feb 12, 2014 to C:\Users\vagrant\ELITEPAD900\drivers\sp65376
+Expand HP SoftPaq 64673 NXP Semiconductors Near Field Proximity (NFP) Driver 1.4.7.2 Dec 2, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64673
+Expand HP SoftPaq 64682 Broadcom GPS Driver 19.17 Dec 6, 2013 to C:\Users\vagrant\ELITEPAD900\drivers\sp64682
+Remove Video drivers from HP SoftPaq 71504
+Expand HP SoftPaq 64673 installer
 Found Inno Setup installer unpacker as C:\vagrant\Downloads\innoextract-1.9-windows.zip
 Copy innoextract-1.9-windows.zip from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
 Expand C:\Users\vagrant\ELITEPAD900\drivers\sp64673\NXP_NFC_Driver_Package_Setup.exe to C:\Users\vagrant\ELITEPAD900\drivers\sp64673
 Found Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012 as C:\vagrant\Downloads\GPS_BCM4751_W8_A02-P0P15_ZPE.exe
 Copy GPS_BCM4751_W8_A02-P0P15_ZPE.exe from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Unpack Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012 to C:\Users\vagrant\ELITEPAD900\drivers\GPS_BCM4751_W8_A02-P0P15_ZPE
 Available drivers:
-C:\Users\vagrant\ELITEPAD900\drivers\GPS_BCM4751_W8_A02-P0P15_ZPE\Win32\BcmGnssBus.inf
-C:\Users\vagrant\ELITEPAD900\drivers\GPS_BCM4751_W8_A02-P0P15_ZPE\Win32\BcmGnssLocationSensor.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp64673\tmp\i386\nxpnfpprovider.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp64673\tmp\pcsc\nxpproximitypcscdrv.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp64682\HP_Driver_Only\BcmGnssBus.inf
@@ -45,7 +57,6 @@ C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\Camera\ov8830\ov883
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\DPTF\Installer\Drivers\Dptf.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\GPIOv2\GpioClv.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\GpioVirtual\GpioVirtual.inf
-C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\Graphics\57589.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\I2C\inteli2c.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\IPC\LNWIPC.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\MBI\MBI.inf
@@ -55,19 +66,27 @@ C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\Security\x86\Chaabi
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\SPI\spi.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\STMicro_SensorHub\STSHA.inf
 C:\Users\vagrant\ELITEPAD900\drivers\sp71504\Package\Drivers\UART\Uart16550pc.inf
-Available drivers count: 30
-Get Windows 10 Pro x86 ISO release 22H2 with English language download URL
-Found Windows ISO downloader as C:\vagrant\Downloads\Fido.ps1
-Copy Fido.ps1 from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found Windows 10 Pro x86 ISO release 22H2 with English language as C:\vagrant\Downloads\Win10_22H2_English_x32v1.iso
-Copy Win10_22H2_English_x32v1.iso from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
-Found Windows 10 Pro x86 ISO release 22H2 with English language as C:\Users\vagrant\Downloads\Win10_22H2_English_x32v1.iso
+Available drivers count: 27
+Found Windows 10 Pro x86 ISO with French language as C:\vagrant\Downloads\Win10_22H2_French_x32v1.iso
+Copy Win10_22H2_French_x32v1.iso from C:\vagrant\Downloads to C:\Users\vagrant\Downloads
 Get install files from ISO
-Mount Windows 10 Pro x86 ISO release 22H2 with English language
-Mounted Windows 10 Pro x86 ISO release 22H2 with English language as D:
+Mount Windows 10 Pro x86 ISO with French language
+Mounted Windows 10 Pro x86 ISO with French language as D:
 Copy *.* from D: to C:\Users\vagrant\ELITEPAD900
-Unmount Windows 10 Pro x86 ISO release 22H2 with English language
+Unmount Windows 10 Pro x86 ISO with French language
+Find image index for Windows 10 Professional variant
+Windows 10 Professional found with name Windows 10 Professionnel
+Windows 10 Professional found with index 6
+Create mount point
+Prepare WinPE image
+Add drivers
+Prepare Setup image
+Add drivers
+Prepare Install image
+Add drivers
+Keep only Windows 10 Pro variant
+Remove mount point
 Add drivers add and export scripts
-Copy drivers-*.bat from C:\vagrant to C:\Users\vagrant\ELITEPAD900\drivers
+Copy drivers-*.bat from C:\vagrant\drivers-scripts to C:\Users\vagrant\ELITEPAD900\drivers
 Copy installation files to origin location
 Copy *.* from C:\Users\vagrant\ELITEPAD900 to C:\vagrant\ELITEPAD900
