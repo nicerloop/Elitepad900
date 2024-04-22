@@ -254,7 +254,9 @@ Write-Host "Available drivers count: $DriverInfFilesCount"
 
 $WindowsInstaller = $true
 if ($WindowsInstaller) {
-$ImagePath, $ImageDescription = Get-WindowsIso -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion "10" -ImageLanguage "French"
+    $ImageVersion = "10"
+    $ImageLanguage = "French"
+$ImagePath, $ImageDescription = Get-WindowsIso -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion $ImageVersion -ImageLanguage $ImageLanguage
 
 Write-Host "Get install files from ISO"
 
