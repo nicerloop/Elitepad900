@@ -293,6 +293,9 @@ If ($SlipstreamDrivers) {
     Write-Host "Remove mount point"
     Remove-Item $WimMount | Out-Null
 
+} else {
+    Write-Host "Copy drivers installers"
+    Copy-Files -Path $DownloadsFolder -DestinationPath $DriversFolder -FileNamePattern "*.exe"
 }
 
 }
