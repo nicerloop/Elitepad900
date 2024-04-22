@@ -171,7 +171,7 @@ function Get-WindowsIso {
     } else {
         throw "Unsupported Windows version $ImageVersion"
     }
-    $ImageDescription = "Windows $ImageVersion} $ImageEdition x86 ISO with $ImageLanguage language"
+    $ImageDescription = "Windows $ImageVersion $ImageEdition x86 ISO with $ImageLanguage language"
     $ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
     Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
         Write-Host "Get $ImageDescription download URL"
