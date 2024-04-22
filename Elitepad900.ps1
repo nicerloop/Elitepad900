@@ -183,14 +183,11 @@ For ($Index = 0; $Index -lt $HpSoftPaqs.Length; $Index++) {
     Expand-HpSoftPaq -Number $Number -Description $Description -SourceFolder $DownloadsFolder -DestinationFolder $DriversFolder
 }
 
-# sp71504 contains two sets of drivers for Win8 and Win8.1
+# sp71504 contains video drivers problematic since Windows 10 1903
 $AlterSP71504 = $true;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
-    Write-Host "Remove DASL from HP SoftPaq 71504"
-    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/DASL") -Recurse
-    Write-Host "Remove Audio drivers from HP SoftPaq 71504"
-    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Audio") -Recurse
-    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Camera") -Recurse
+    Write-Host "Remove Video drivers from HP SoftPaq 71504"
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Video") -Recurse -Force
 }
 
 # sp64673 must be expanded to access the drivers
