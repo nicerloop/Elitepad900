@@ -205,7 +205,7 @@ $ZipPackFileBaseName = "GPS_BCM4751_W8_A02-P0P15_ZPE"
 $ZipPackUrl = "https://dl.dell.com/FOLDER00998748M/3/GPS_BCM4751_W8_A02-P0P15_ZPE.exe"
 $ZipPackDescription = "Dell ZipPack P0P15 BCM47511 Standalone GPS Solution 19.14.6362.4, A02 30 Nov 2012"
 Get-File -File "$ZipPackFileBaseName.exe" -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Url $ZipPackUrl -Description $ZipPackDescription
-Expand-DellZipPack -ZipPackFileBaseName $ZipPackFileBaseName -ZipPackDescription $ZipPackDescription -DownloadsFolder $DownloadsFolder -DriversFolder $DriversFolder
+# Expand-DellZipPack -ZipPackFileBaseName $ZipPackFileBaseName -ZipPackDescription $ZipPackDescription -DownloadsFolder $DownloadsFolder -DriversFolder $DriversFolder
 
 Write-Host "Available drivers:"
 $DriverInfFiles = (Get-ChildItem -Recurse -Filter "*.inf" -Path $DriversFolder)
