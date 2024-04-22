@@ -180,6 +180,22 @@ function Get-WindowsIso {
     return $ImagePath, $ImageDescription
 }
 
+function Add-Drivers {
+    param (
+        [Parameter(Mandatory)] $ImageDescription,
+        [Parameter(Mandatory)] $ImagePath,
+        [Parameter(Mandatory)] $ImageIndex,
+        [Parameter(Mandatory)] $MountPath,
+        [Parameter(Mandatory)] $DriversFolder
+    )
+    Write-Host "Prepare $ImageDescription image"
+    Mount-WindowsImage -ImagePath $ImagePath -Index $ImageIndex -Path $MountPath | Out-Null
+    Write-Host "Add drivers"
+    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
+    Dismount-WindowsImage -Path $MountPath -Save | Out-Null
+    Clear-WindowsCorruptMountPoint | Out-Null
+}
+
 Write-Host "Define work folders location"
 $ScriptFolder = $PSScriptRoot
 $DownloadsFolder = (Join-Path -Path $HOME -ChildPath "Downloads")
@@ -250,22 +266,6 @@ Write-Host "Unmount $ImageDescription"
 Dismount-DiskImage -ImagePath $ImagePath | Out-Null
 
 $SlipstreamDrivers = $true
-function Add-Drivers {
-    param (
-        [Parameter(Mandatory)] $ImageDescription,
-        [Parameter(Mandatory)] $ImagePath,
-        [Parameter(Mandatory)] $ImageIndex,
-        [Parameter(Mandatory)] $MountPath,
-        [Parameter(Mandatory)] $DriversFolder
-    )
-    Write-Host "Prepare $ImageDescription image"
-    Mount-WindowsImage -ImagePath $ImagePath -Index $ImageIndex -Path $MountPath | Out-Null
-    Write-Host "Add drivers"
-    Add-WindowsDriver -Path $WimMount -Driver $DriversFolder -Recurse | Out-Null
-    Dismount-WindowsImage -Path $MountPath -Save | Out-Null
-    Clear-WindowsCorruptMountPoint | Out-Null
-}
-
 If ($SlipstreamDrivers) {
 
     $SourcesFolder = (Join-Path $WorkFolder "sources")
