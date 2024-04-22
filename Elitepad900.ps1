@@ -149,6 +149,37 @@ function Get-WindowsIsoUrl {
     (& $FidoFile -Win $ImageVersion -Ed $ImageEdition -Lang $ImageLanguage -Arch x86 -GetUrl)
 }
 
+# Download Windows x32 ISO
+# https://www.microsoft.com/en-us/software-download/windows8ISO
+# https://www.microsoft.com/en-us/software-download/windows10ISO
+function Get-WindowsIso {
+    param (
+        [Parameter(Mandatory)] $DownloadsFolder,
+        [Parameter(Mandatory)] $BackupFolder,
+        [Parameter(Mandatory)] $ImageVersion,
+        [Parameter(Mandatory)] $ImageLanguage
+    )
+    if ($ImageVersion -eq "10") {
+        $ImageEdition = "Pro"
+        $ImageRelease = "22H2"
+        $ImageSuffix = "v1"
+        $ImageFileName = "Win${ImageVersion}_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
+    } elseif ($ImageVersion -eq "8" -or $ImageVersion -eq "8.1") {
+        $ImageVersion = "8.1"
+        $ImageEdition = "Standard"
+        $ImageFileName = "Win${ImageVersion}_${ImageLanguage}_x32.iso"
+    } else {
+        throw "Unsupported Windows version $ImageVersion"
+    }
+    $ImageDescription = "Windows $ImageVersion} $ImageEdition x86 ISO with $ImageLanguage language"
+    $ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
+    Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
+        Write-Host "Get $ImageDescription download URL"
+        Get-WindowsIsoUrl -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion $ImageVersion -ImageEdition $ImageEdition -ImageLanguage $ImageLanguage
+    }
+    return $ImagePath, $ImageDescription
+}
+
 Write-Host "Define work folders location"
 $ScriptFolder = $PSScriptRoot
 $DownloadsFolder = (Join-Path -Path $HOME -ChildPath "Downloads")
@@ -207,28 +238,7 @@ Write-Host "Available drivers count: $DriverInfFilesCount"
 
 $WindowsInstaller = $true
 if ($WindowsInstaller) {
-
-# Download Windows x32 ISO
-# https://www.microsoft.com/en-us/software-download/windows8ISO
-# https://www.microsoft.com/en-us/software-download/windows10ISO
-
-# $ImageVersion = "8.1"
-# $ImageEdition = "Standard"
-$ImageVersion = "10"
-$ImageEdition = "Pro"
-$ImageRelease = "22H2"
-$ImageSuffix = "v1"
-$ImageLanguage = "French"
-$ImageFileName = "Win${ImageVersion}_${ImageRelease}_${ImageLanguage}_x32${ImageSuffix}.iso"
-# $ImageFileName = "Win${ImageVersion}_${ImageLanguage}_x32.iso"
-$ImagePath = (Join-Path -Path $DownloadsFolder -ChildPath $ImageFileName)
-# $ImageDescription = "Windows 10 Pro x86 ISO release $ImageRelease with $ImageLanguage language"
-$ImageDescription = "Windows ${ImageVersion} ${ImageEdition} x86 ISO with $ImageLanguage language"
-
-Get-File -FileName $ImageFileName -DestinationFolder $DownloadsFolder -BackupFolder $BackupFolder -Description $ImageDescription -ScriptBlock {
-    Write-Host "Get $ImageDescription download URL"
-    Get-WindowsIsoUrl -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion $ImageVersion -ImageEdition $ImageEdition -ImageLanguage $ImageLanguage
-}
+$ImagePath, $ImageDescription = Get-WindowsIso -DownloadsFolder $DownloadsFolder -BackupFolder $BackupFolder -ImageVersion "10" -ImageLanguage "French"
 
 Write-Host "Get install files from ISO"
 
