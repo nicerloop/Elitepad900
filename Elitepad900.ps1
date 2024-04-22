@@ -264,10 +264,10 @@ Write-Host "Mounted $ImageDescription as $DriveLetter`:"
 Copy-Files -Path "$DriveLetter`:" -DestinationPath $WorkFolder -FileNamePattern "*.*"
 Write-Host "Unmount $ImageDescription"
 Dismount-DiskImage -ImagePath $ImagePath | Out-Null
+}
 
 $SlipstreamDrivers = $true
-If ($SlipstreamDrivers) {
-
+If ($SlipstreamDrivers -and $WindowsInstaller) {
     $SourcesFolder = (Join-Path $WorkFolder "sources")
     $BootWim = (Join-Path $SourcesFolder "boot.wim")
     $InstallWim = (Join-Path $SourcesFolder "install.wim")
@@ -298,8 +298,6 @@ If ($SlipstreamDrivers) {
 } else {
     Write-Host "Copy drivers installers"
     Copy-Files -Path $DownloadsFolder -DestinationPath $DriversFolder -FileNamePattern "*.exe"
-}
-
 }
 
 Write-Host "Add drivers add and export scripts"
