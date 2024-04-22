@@ -3,8 +3,6 @@ $ErrorActionPreference = "Stop"
 
 Set-StrictMode -Version 3
 
-# Set-PSDebug -Trace 2
-
 # Prevent issues with CLI non-interactive execution
 # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/77#issuecomment-601947496
 Write-Host "Disable progress bars for CLI non-interactive execution"
