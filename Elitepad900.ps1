@@ -226,7 +226,7 @@ For ($Index = 0; $Index -lt $HpSoftPaqs.Length; $Index++) {
 $AlterSP71504 = $true;
 if ($AlterSP71504 -And (Test-Path -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504"))) {
     Write-Host "Remove Video drivers from HP SoftPaq 71504"
-    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Video") -Recurse -Force
+    Remove-Item -Path (Join-Path -Path $DriversFolder -ChildPath "sp71504/Package/Drivers/Graphics") -Recurse -Force
 }
 
 # sp64673 must be expanded to access the drivers
